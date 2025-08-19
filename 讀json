@@ -1,0 +1,18 @@
+import pandas as pd
+
+import json
+
+# 嘗試讀取文件來檢查格式
+with open(r'C:\Users\jenny\Downloads\pokemon.json', 'r') as file:
+    try:
+        data = json.load(file)
+        print(data[:5])  # 顯示前五條資料，看看是否正確載入
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+# 載入寶可夢資料
+df = pd.read_json(r'C:\Users\jenny\Downloads\pokemon.json')     
+
+# 取出目標欄位
+X_train = df.iloc[:, :-1]
+X_train.head()
+
