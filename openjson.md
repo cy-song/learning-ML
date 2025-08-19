@@ -12,3 +12,11 @@
 
 ## 解決方案
 - 將 `NaN` 改為 `null`
+
+可以在以下連結檢查:
+[jsonlint](https://jsonlint.com/)
+
+```python
+def greet():
+    print("Hello, World!")
+
