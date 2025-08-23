@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import cross_val_score, GridSearchCV
+
+# 讀取資料
+data = pd.read_csv("cardata.txt", header=None)
+data.columns = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'car']
+
+# 對分類資料做Label Encoding
+X = data.iloc[:, :-1]
+y = data.iloc[:, -1]
+
+label_encoders = {}  #訓練時用的LabelEncoder一定要保存，以後預測時用同一個，不然數字會錯
+for column in X.columns:
+    le = LabelEncoder()                        #LabelEncoder() 是一個object，含有文字類別,對應數字
+    X[column] = le.fit_transform(X[column])   #每欄文字轉成數字   .fit_transform後，這個編碼器記住了['low' → 0, 'med' → 1, 'high' → 2]
+                                             #LabelEncoder型態為<class 'sklearn.preprocessing._label.LabelEncoder'>，sklearn中的一個類別
+    label_encoders[column] = le               #把這個欄位對應的編碼器存起來(放進字典) (不同欄位的文字不一樣，要用自己的編碼器來對應)
+                                                                         #(用'safety'那欄的轉換器，把'high'變成數字)   
+# 對 y 也進行 Label Encoding
+y_le = LabelEncoder()
+y = y_le.fit_transform(y)
+
+# 建立分類器
+clf = RandomForestClassifier(n_estimators=200, max_depth=8, random_state=7)   
+
+# 三折交叉驗證
+accuracy_scores = cross_val_score(clf, X, y, cv=3, scoring='accuracy')  #不用自己寫clf.fit 因為cross_val_score自己會幫你做訓練
+accuracy = accuracy_scores.mean()
+print(f"1. 分類器準確度：{round(accuracy * 100, 2)}")
+
+# 預測單筆輸入資料
+input_data = ['high', 'low', '2', 'more', 'med', 'high']
+input_df = pd.DataFrame([input_data], columns=X.columns)       #模型要吃DataFrame (表格)格式 
+
+# Label Encoding for input
+for col in input_df.columns:
+    input_df[col] = label_encoders[col].transform(input_df[col])
+
+clf.fit(X, y)
+predicted_class = clf.predict(input_df)
+predicted_label = y_le.inverse_transform(predicted_class)[0]
+print(f"2. 預測類別：{predicted_label}")
+
+# 超參數搜尋
+param_grid = {'n_estimators': np.linspace(25, 200, 8).astype(int)}
+grid_search = GridSearchCV(RandomForestClassifier(max_depth=8, random_state=7),
+                           param_grid,
+                           cv=5,
+                           return_train_score=True)
+grid_search.fit(X, y)          #要自己.fit()才會跑搜尋
+
+# 輸出指定結果
+train_scores = grid_search.cv_results_['mean_train_score']
+val_scores = grid_search.cv_results_['mean_test_score']
+print(f"3. 第一組 Training score 第一筆：{str(train_scores[0])[:6]}")
+print(f"4. 最後一組 Validation score 第一筆：{str(val_scores[-1])[:6]}")
