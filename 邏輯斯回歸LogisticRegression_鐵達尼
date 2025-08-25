@@ -1,0 +1,80 @@
+import pandas as pd
+import numpy as np
+from sklearn import preprocessing, linear_model
+from sklearn.linear_model import LogisticRegression
+
+# 原始資料
+
+titanic = pd.read_csv("titanic.csv")
+print('raw data')
+#print(titanic)
+
+# TODO
+
+df= titanic.copy()
+[df.info](http://df.info/)()
+
+# 將年齡的空值填入年齡的中位數 2.請撰寫程式，讀取titanic.csv；其中年齡（Age）欄位的NA值，請以年齡的中位數代入。
+
+# TODO
+
+age_med = df['Age'].median()
+df['Age'] = df['Age'].fillna(age_med)
+
+#age_median = df.Age.median()
+#df.Age = df.Age.fillna(age_median)
+
+print("年齡中位數=" , age_med      )
+
+# TODO
+
+# 更新後資料
+
+print('new data')
+
+# TODO
+
+# 轉換欄位值成為數值 .使用乘客等級（PClass）、年齡（Age）和性別碼（SexCode）三個欄位的資料來訓練邏輯迴歸預測模型。
+
+label_encoder = preprocessing.LabelEncoder()
+#encoded_PClass = label_encoder.fit_transform( df.PClass )
+#encoded_Age = label_encoder.fit_transform( df.Age )
+df['sexcode'] = label_encoder.fit_transform( df.Sex)
+
+# TODO
+
+X = df[['Pclass','Age', 'sexcode']]
+Y = df['Survived']
+from sklearn.model_selection import train_test_split
+
+# 建立模型
+
+X_train, x_te ,Y_tra, y_te = train_test_split(X,Y)
+model = LogisticRegression()
+model.fit(X_train, Y_tra)
+
+intercept = model.intercept_
+coef =  model.coef_
+
+print(f'截距=  {intercept[0]:.4f}'        )
+print(f'迴歸係數= {coef[0,2]:.4f}'       )
+
+# 混淆矩陣(Confusion Matrix)，計算準確度
+
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+y_pre = model.predict(x_te)
+acc = accuracy_score(y_te, y_pre)
+print("準確率",round(acc*100,4), "%")
+
+cm = confusion_matrix(y_te, y_pre)
+print('Confusion Matrix',cm)
+
+# TODO
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.heatmap(cm, annot=True, fmt='d',cmap = 'Blues')
+plt.title("Confusion Matrix")
+plt.show()
