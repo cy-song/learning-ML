@@ -1,0 +1,77 @@
+#寶可夢
+
+
+import pandas as pd
+
+# 載入寶可夢資料集
+data = pd.read_csv('pokemon.csv')
+df = data.copy()
+#print(df.info)
+print(df.columns)                                       #################################看正確名稱
+# 只要三種類：Normal, Fighting, Ghost
+df = df[df['Type1'].isin(['Normal','Fighting','Ghost'])]    ############################ bu = df['Type1'].isin(['N','Fi','Gh'])  df= df[bu]
+
+# 處理遺漏值
+features = ['Attack', 'Defense']
+df = df.dropna(subset=['Attack', 'Defense'])##########################df=df.dropna(subset=['',''])########################df[features] = df.dropna(df[features])
+# TODO
+
+# 取出目標寶可夢的 Type1 與兩個特徵欄位
+# TODO
+X = df[['Attack', 'Defense']]                               ################################# X = df[['','']]
+Y = df['Type1']       #題目有說針對type1                           ############################################# y = df['Type1]
+
+
+# 編碼 Type1
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+Y = le.fit_transform(Y)
+
+# 特徵標準化
+from sklearn.preprocessing import StandardScaler
+# TODO
+scale = StandardScaler()
+X_standard = scale.fit_transform(X)
+
+
+
+# 建立線性支援向量分類器，除以下參數設定外，其餘為預設值
+# #############################################################################
+# C=0.1, dual=False, class_weight='balanced'
+# #############################################################################
+from sklearn.svm import LinearSVC
+# TODO
+
+model = LinearSVC(C=0.1, dual=False, class_weight='balanced')
+model.fit(X_standard,Y)
+y_pred = model.predict(X_standard)
+
+# 計算分類錯誤的數量  ///
+# TODO
+error_num = (y_pred!= Y).sum()                             ############################################### err_num= (y!=y_pre ).sum
+print('分類錯誤的數量',error_num)
+
+
+# 計算準確度(accuracy)
+from sklearn.metrics import accuracy_score
+acc = accuracy_score(Y,y_pred)                                   
+
+print(f'Accuracy:{acc*100:4f}% '   )
+
+# 計算有加權的 F1-score (weighted)             / F1 = f1_core(y,y_pred,average='weighted')
+from sklearn.metrics import f1_score    
+# TODO
+
+F1 = f1_score(Y,y_pred,average = 'weighted')    #vvvvv
+
+print('F1-score: ',F1          )
+
+# 預測未知寶可夢的 Type1
+# TODO
+
+input = [[100,75]]
+input_std = scale.fit_transform(input)      ###################訓練時你有用 StandardScaler，預測也要同樣轉換。  # 跟訓練時同一個 scaler
+y_pred2 = model.predict(input_std )       ##########還是encoder數字
+y_label = le.inverse_transform(y_pred2)   
+print(f"label = {y_label[0]}")
+
