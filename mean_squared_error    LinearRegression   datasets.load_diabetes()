@@ -1,0 +1,58 @@
+#糖尿病      倒數第5
+
+from sklearn import datasets
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error                    ##########################
+
+# TODO
+data = datasets.load_diabetes()                                  ###########
+#print(data.keys())    來看裡面有哪些屬性
+#print(dir(data))        #來看裡面有哪些屬性
+#print(data.DESCR)
+df = pd.DataFrame(data.data, columns=data.feature_names)
+
+
+
+print(df.dtypes)
+print(df.columns)                                                        ############################################vvvvvvv
+print(df.head())
+print(df.shape)
+#get x
+# TODO 
+#df = pd.DataFrame(data.data, columns=data.feature_names)
+df['target'] = data.target
+X = df[data.feature_names]  # 用欄位名稱直接取出
+y = df['target']                       #####X = df.data
+                                   #######################################Y = data.target  #Y = pd.Series(data.target)
+
+#Total number of examples
+# TODO 
+model = LinearRegression()
+model.fit(X,y)
+y_pred = model.predict(X)
+Total_MSE = mean_squared_error(y,y_pred)                                                                  #################
+r2 = model.score(X,y)
+print('Total number of examples')
+print('MSE='   ,  round(Total_MSE,4)            )
+print('R-squared=',  round(r2,4)         )
+#3:1 100
+from sklearn.model_selection import train_test_split
+xTrain2, xTest2, yTrain2, yTest2= train_test_split(X,y,test_size = 0.25, random_state=100)
+lm2=LinearRegression()
+lm2.fit(xTrain2    , yTrain2   )
+# TODO 
+
+train2_pred = lm2.predict(xTrain2)
+train_MSE = mean_squared_error(yTrain2,train2_pred)                                #######yTrain2,Xtrain2_pred##########
+r2_train = lm2.score(xTrain2, yTrain2)                          ######model 要改lm2
+
+test2_pred = lm2.predict(xTest2)
+test_MSE = mean_squared_error(yTest2,test2_pred)                       #######(yTest2,Xtest2_pred##########
+r2_test = lm2.score(xTest2, yTest2)                       ######model 要改lm2
+
+print('Split 3:1')
+print('train MSE=',round(train_MSE,4)            )
+print('test MSE=',  round(test_MSE,4)          )
+print('train R-squared=' , round( r2_train, 4)            )
+print('test R-squared=' ,round(r2_test , 4)               )
