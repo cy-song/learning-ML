@@ -1,0 +1,37 @@
+from matplotlib import pyplot as plt
+from sklearn.datasets.samples_generator import make_blobs
+from sklearn.cluster import KMeans
+
+#  載入scikit-learn資料集範例資料
+# TODO
+X,y= make_blobs(n_samples = 200, centers = 4, cluster_std = 0.5, random_state = 0)
+#inertia_集群內誤差平方和，做轉折判斷法的依據
+# TODO
+inertias = []
+for k in range(1,11):
+    km = KMeans(n_clusters = k, init = 'k-means++',n_init =15, max_iter = 200, random_state =0 )
+    km.fit(X)
+    inertia = km.inertia_
+    if inertia > 90:
+        inertias.append((k,inertia))#實作
+    # TODO
+for k, iner in inertias:
+    print(f"k={k}, inertia = {iner:.2f}")
+
+kmeans =  KMeans(n_clusters = 4, init = 'k-means++',n_init =15, max_iter = 200, random_state =0 ) # TODO
+kmeans.fit(X)
+#kmeans_predict=kmeans.fit_predict(X)
+centers = kmeans.cluster_centers_
+print("cluster_centers=" , centers       )
+
+alliner= []
+for k in range(1,11):
+    km = KMeans(n_clusters = k, init = 'k-means++',n_init =15, max_iter = 200, random_state =0 )
+    km.fit(X)
+    inertia = km.inertia_
+    
+    alliner.append(inertia)#實作
+    
+plt.plot(range(1,11),alliner,marker = 'o')
+plt.grid(True)
+plt.show()
