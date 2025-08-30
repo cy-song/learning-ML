@@ -18,8 +18,8 @@ df= titanic.copy()
 
 # TODO
 
-age_med = df['Age'].median()
-df['Age'] = df['Age'].fillna(age_med)
+age_med = df['Age'].median()                                        ###################################
+df['Age'] = df['Age'].fillna(age_med)                                ##########################################
 
 #age_median = df.Age.median()
 #df.Age = df.Age.fillna(age_median)
@@ -39,12 +39,12 @@ print('new data')
 label_encoder = preprocessing.LabelEncoder()
 #encoded_PClass = label_encoder.fit_transform( df.PClass )
 #encoded_Age = label_encoder.fit_transform( df.Age )
-df['sexcode'] = label_encoder.fit_transform( df.Sex)
+df['sexcode'] = label_encoder.fit_transform( df.Sex)                              ##################################
 
 # TODO
 
-X = df[['Pclass','Age', 'sexcode']]
-Y = df['Survived']
+X = df[['Pclass','Age', 'sexcode']]                              ##################################
+Y = df['Survived']                              ##################################
 from sklearn.model_selection import train_test_split
 
 # 建立模型
@@ -53,8 +53,8 @@ X_train, x_te ,Y_tra, y_te = train_test_split(X,Y)
 model = LogisticRegression()
 model.fit(X_train, Y_tra)
 
-intercept = model.intercept_
-coef =  model.coef_
+intercept = model.intercept_                              ##################################
+coef =  model.coef_                              ##################################
 
 print(f'截距=  {intercept[0]:.4f}'        )
 print(f'迴歸係數= {coef[0,2]:.4f}'       )
@@ -67,14 +67,14 @@ y_pre = model.predict(x_te)
 acc = accuracy_score(y_te, y_pre)
 print("準確率",round(acc*100,4), "%")
 
-cm = confusion_matrix(y_te, y_pre)
-print('Confusion Matrix',cm)
+cm = confusion_matrix(y_te, y_pre)                              ##################################
+print('Confusion Matrix',cm)                              ##################################
 
 # TODO
 
-import seaborn as sns
+import seaborn as sns                              ##################################
 import matplotlib.pyplot as plt
 
-sns.heatmap(cm, annot=True, fmt='d',cmap = 'Blues')
+sns.heatmap(cm, annot=True, fmt='d',cmap = 'Blues')                              ##################################
 plt.title("Confusion Matrix")
 plt.show()
